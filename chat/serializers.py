@@ -2,6 +2,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from django.core import exceptions
 import django.contrib.auth.password_validation as validators
+from .models import ContactBook
 
 class GroupSerializer(serializers.ModelSerializer):
     # url = serializers.HyperlinkedRelatedField(view_name='api:user-detail',
@@ -22,7 +23,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     #     return user
 
-    groups = GroupSerializer(many=True)
+    groups = GroupSerializer(required=False, many=True)
 
     def validate(self, data):
          user = User(**data)
@@ -47,4 +48,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
             'password': { 'write_only': True }
         }
         fields = ('username', 'id', 'password', 'groups')
+
+class ContactBookSerializer(serializers.HyperlinkedModelSerializer):
+    users = UserSerializer(required=False, many=True)
+
+    class Meta:
+        model = ContactBook
+        extra_kwargs = {
+            'user_id': { 'required': False },
+            'book_owner': { 'required': False }
+        }
+        fields = ('users', 'user_id', 'book_owner', 'id', 'created_at', 'updated_at')
 

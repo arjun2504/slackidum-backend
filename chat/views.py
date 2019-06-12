@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from rest_framework import viewsets
 from django.contrib.auth.models import User, Group
-from chat.serializers import UserSerializer, GroupSerializer
+from chat.serializers import UserSerializer, GroupSerializer, ContactBookSerializer
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -16,6 +16,8 @@ from rest_framework.decorators import permission_classes as pc
 from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter
 from pprint import pprint
+from django.contrib.auth import get_user_model
+from .models import ContactBook
 # Create your views here.
 
 class IsCreationOrIsAuthenticated(BasePermission):
@@ -41,7 +43,6 @@ class UserViewSet(viewsets.ModelViewSet):
     filter_fields = ['username']
 
 
-
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
 
@@ -50,6 +51,22 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response({ 'id': u.pk }, status=status.HTTP_201_CREATED)
 
         return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CurrentUserDetails(APIView):
+
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        l = []
+        if request.GET.get('type') == 'user_groups':
+            for g in request.user.groups.all():
+                l.append({ 'group_name': g.name, 'id': g.id })
+
+            return Response(data=l, status=status.HTTP_200_OK)
+
+        return Response(data=None, status=status.HTTP_400_BAD_REQUEST)    
 
 
 
@@ -67,6 +84,9 @@ class UserExistsView(APIView):
             return Response(data={'message': False})
 
 class GroupViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
 
@@ -81,6 +101,7 @@ class GroupViewSet(viewsets.ModelViewSet):
             g = Group.objects.create(**serializer.validated_data)
             for uid in request.data.get('user_ids'):
                 g.user_set.add(uid)
+            g.user_set.add(request.user.id)
 
             return Response({ 'message': True }, status=status.HTTP_201_CREATED)
 
@@ -100,3 +121,28 @@ class GroupViewSet(viewsets.ModelViewSet):
             g.user_set.add(id)
 
         return Response({ 'message': True }, status=status.HTTP_201_CREATED)
+
+
+class ContactBookViewSet(viewsets.ModelViewSet):
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
+
+    queryset = ContactBook.objects.all()
+    serializer_class = ContactBookSerializer
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+
+        count = 0
+        if serializer.is_valid():
+            pprint(request.data.get('user_ids'))
+            for uids in request.data.get('user_ids'):
+                cb = ContactBook(book_owner=User.objects.get(pk=request.user.id), user_id=User.objects.get(pk=uids))
+                cb.save()
+                count += 1
+
+            return Response({ 'created': count }, status=status.HTTP_201_CREATED)
+
+        return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
+
