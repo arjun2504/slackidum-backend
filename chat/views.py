@@ -18,12 +18,14 @@ from django_filters import rest_framework as filters
 from rest_framework.filters import SearchFilter
 from pprint import pprint
 from django.contrib.auth import get_user_model
-from .models import Conversation, ContactBook
+from .models import Conversation, ContactBook, Presence
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.request import Request
 from rest_framework.test import APIRequestFactory
 from rest_framework.response import Response
+import json
+
 # Create your views here.
 
 class IsCreationOrIsAuthenticated(BasePermission):
@@ -82,7 +84,10 @@ class CurrentUserDetails(APIView):
         elif request.GET.get('type') == 'user_contacts':
             cb = ContactBook.objects.filter(book_owner=request.user.id)
             for contact in cb:
-                l.append({ 'id': contact.user_id.id, 'username': contact.user_id.username })
+                is_online = False
+                if Presence.objects.filter(user_id=User.objects.get(username=contact.user_id)).count() > 0:
+                    is_online = True
+                l.append({ 'id': contact.user_id.id, 'username': contact.user_id.username, 'is_online': is_online })
             return Response(data=l, status=status.HTTP_200_OK)
         elif request.GET.get('type') == 'self_info':
             details = { 'id': request.user.id, 'username': request.user.username }
@@ -130,19 +135,35 @@ class GroupViewSet(viewsets.ModelViewSet):
         return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
     
     
-    def add_to_group(self, request, group_id):
+    def add_to_group(self, request, group_username):
         """
         Adds users to existing group
         """
         try:
-            g = Group.objects.get(id=group_id)
+            g = Group.objects.get(name=group_username)
         except Group.DoesNotExist:
             return Response({ 'message': False }, status=status.HTTP_400_BAD_REQUEST)
 
-        for id in request.data.get('user_ids'):
-            g.user_set.add(id)
-
+        for username in request.data.get('user_ids'):
+            user_id = User.objects.get(username=username).id
+            g.user_set.add(user_id)
+        
         return Response({ 'message': True }, status=status.HTTP_201_CREATED)
+
+    def group_members(self, request, group_username):
+        """
+        Get group members
+        """
+        try:
+            user_obj = User.objects.filter(groups__name=group_username)
+        except User.DoesNotExist:
+            return Response({ 'message': False }, status=status.HTTP_400_BAD_REQUEST)
+        
+        users = []
+        for u in user_obj:
+            users.append(u.username)
+
+        return Response({ 'members_list': users }, status=status.HTTP_200_OK)
 
 
 class ContactBookViewSet(viewsets.ModelViewSet):

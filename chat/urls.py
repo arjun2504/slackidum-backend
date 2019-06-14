@@ -11,7 +11,8 @@ urlpatterns = [
 
     path('group/', views.GroupViewSet.as_view({ 'get': 'list', 'post': 'create'})),
     path('group/create/', views.GroupViewSet.as_view({ 'post': 'create'})),
-    path('group/<int:group_id>/add-user/', views.GroupViewSet.as_view({ 'post': 'add_to_group'})),
+    path('group/<slug:group_username>/add-user/', views.GroupViewSet.as_view({ 'post': 'add_to_group'})),
+    path('members/<slug:group_username>/', views.GroupViewSet.as_view({ 'get': 'group_members'})),
 
     path('current-user/', views.CurrentUserDetails.as_view()),
     path('add-contact/', views.ContactBookViewSet.as_view({'post': 'create'})),

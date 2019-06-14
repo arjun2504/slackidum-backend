@@ -38,3 +38,9 @@ class Conversation(models.Model):
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+class Presence(models.Model):
+    id = models.AutoField(primary_key=True)
+    user_id = models.ForeignKey(User, blank=False, null=False, related_name="online_user", on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)

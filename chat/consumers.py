@@ -2,6 +2,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from channels.auth import login
+from .models import ContactBook
 from django.contrib.auth.models import User
 from .models import Conversation
 from channels.db import database_sync_to_async
@@ -21,7 +22,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        print('connected')
+        print('connected' + self.channel_name)
         await self.accept()
 
     async def disconnect(self, close_code):
@@ -51,9 +52,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print('received ' + str(message['message']) + ' from ws')
 
     def save_convo(self, message):
-    	Conversation.objects.create(chat_room=self.room_name, 
+        if self.room_name.startswith('chat__'):
+            room_name = self.room_name.replace('chat__','')
+            users = room_name.split('__')
+
+            if ContactBook.objects.filter(book_owner=User.objects.get(username=users[0]), user_id=User.objects.get(username=users[1])).count() == 0:
+                ContactBook.objects.create(book_owner=User.objects.get(username=users[0]), user_id=User.objects.get(username=users[1]))
+
+            if ContactBook.objects.filter(book_owner=User.objects.get(username=users[1]), user_id=User.objects.get(username=users[0])).count() == 0:
+                ContactBook.objects.create(book_owner=User.objects.get(username=users[1]), user_id=User.objects.get(username=users[0]))
+
+        Conversation.objects.create(chat_room=self.room_name, 
                                         message=message, 
                                         user_id=User.objects.get(username=str(self.scope['user'])))
+        
 
     # Receive message from room group
     async def chat_message(self, event):
