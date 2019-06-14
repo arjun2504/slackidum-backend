@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'chat',
     'rest_framework',
     'rest_framework.authtoken',
@@ -57,6 +58,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'slackidum.urls'
+
 
 TEMPLATES = [
     {
@@ -119,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -147,3 +149,14 @@ REST_FRAMEWORK = {
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:3000"
 ]
+
+ASGI_APPLICATION = 'slackidum.routing.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
