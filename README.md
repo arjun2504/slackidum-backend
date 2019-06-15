@@ -27,7 +27,7 @@ Please make sure you that you have following prerequisites installed before inst
     ```
 3. Install the dependencies
     ```
-    $ pip install -r requirements.txt
+    (venv) $ pip install -r requirements.txt
     ```
 4. Open up `slackidum/settings.py` and modify your database settings.
     ```
@@ -55,12 +55,12 @@ Please make sure you that you have following prerequisites installed before inst
     ```
 6. Migrate database.
     ```
-    $ python manage.py makemigrations
-    $ python manage.py migrate
+    (venv) $ python manage.py makemigrations
+    (venv) $ python manage.py migrate
     ```
 7. Now serve the backend using:
     ```
-    $ python manage.py runserver
+    (venv) $ python manage.py runserver
     ```
 
 ## You're done!
