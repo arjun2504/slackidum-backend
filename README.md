@@ -42,7 +42,7 @@ Please make sure you that you have following prerequisites installed before inst
         }
     }
     ```
-    5. In case you are running redis on a different port, make sure your update it in the following code in the same file.
+5. In case you are running redis on a different port, make sure your update it in the following code in the same file.
     ```
     CHANNEL_LAYERS = {
         'default': {
@@ -53,12 +53,12 @@ Please make sure you that you have following prerequisites installed before inst
         },
     }
     ```
-    6. Migrate database.
+6. Migrate database.
     ```
     $ python manage.py makemigrations
     $ python manage.py migrate
     ```
-    7. Now serve the backend using:
+7. Now serve the backend using:
     ```
     $ python manage.py runserver
     ```
