@@ -235,7 +235,16 @@ class ConversationView(APIView):
          assert self.paginator is not None
          return self.paginator.get_paginated_response(data)
 
+class PresenceView(APIView):
+    authentication_classes = (SessionAuthentication, BasicAuthentication, TokenAuthentication)
+    permission_classes = (IsAuthenticated,)
 
+    def get(self, request):
+        try:
+            Presence.objects.filter(user_id=request.user).delete()
+        except Presence.DoesNotExist:
+            return Response(data={ 'logged_out': False }, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={ 'logged_out': True }, status=status.HTTP_200_OK)
 
 class CustomObtainAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):

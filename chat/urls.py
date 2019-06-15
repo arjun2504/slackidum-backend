@@ -18,7 +18,7 @@ urlpatterns = [
     path('add-contact/', views.ContactBookViewSet.as_view({'post': 'create'})),
     path('user-detail/<int:pk>/', views.UserDetailView.as_view(), name='user-detail'),
     path('get-convo/', views.ConversationView.as_view()),
-
+    path('logout/', views.PresenceView.as_view()),
 
     re_path(r'^chat/$', views.index, name='index'),
     re_path(r'^chat/(?P<room_name>[^/]+)/$', views.room, name='room')
