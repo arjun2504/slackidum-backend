@@ -4,7 +4,7 @@ This is a bakcend built with Django for [Slackidum](https://github.com/arjun2504
 
 - [django](https://www.djangoproject.com/) web framework
 - [djangorestframework](https://www.django-rest-framework.org/) - to build API endpoints
-- [djang-channels](https://github.com/django/channels), for WebSocket
+- [django-channels](https://github.com/django/channels), for WebSocket
 - [redis](https://redis.io/), as a backing store
 - [postgresql](https://www.postgresql.org/), as a database
 
