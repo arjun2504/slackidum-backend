@@ -53,7 +53,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
-
+            
         if serializer.is_valid():
             u = User.objects.create_user(**serializer.validated_data)
             return Response({ 'id': u.pk }, status=status.HTTP_201_CREATED)
