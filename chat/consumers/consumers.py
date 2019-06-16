@@ -2,9 +2,9 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from channels.auth import login
-from .models import ContactBook
+from chat.models import ContactBook
 from django.contrib.auth.models import User
-from .models import Conversation
+from chat.models import Conversation
 from channels.db import database_sync_to_async
 
 class ChatConsumer(AsyncWebsocketConsumer):
@@ -14,9 +14,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #self.room_group_name = 'chat_%s' % self.room_name
         self.room_group_name = self.room_name
 
-        # if self.scope['user'] == 'AnonymousUser':
-           #  # save the session (if the session backend does not access the db you can use `sync_to_async`)
-           #  await database_sync_to_async(self.scope["session"].save)()
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,

@@ -2,10 +2,10 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
 from channels.auth import login
-from .models import ContactBook
+from chat.models import ContactBook
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
-from .models import Presence
+from chat.models import Presence
 
 class OnlinePresence(AsyncWebsocketConsumer):
     async def connect(self):
@@ -19,7 +19,6 @@ class OnlinePresence(AsyncWebsocketConsumer):
         )
 
         await database_sync_to_async(self.save_presence)()
-        print(self.scope['user'] + ' is online')
         await self.accept()
 
         await self.channel_layer.group_send(
