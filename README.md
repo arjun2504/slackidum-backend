@@ -3,7 +3,7 @@
 This is a bakcend built with Django for [Slackidum](https://github.com/arjun2504/slackidum) web application.
 
 - [django](https://www.djangoproject.com/) web framework
-- [djang-channels](https://github.com/django/channels), for WebSocket - v1.1.6
+- [djang-channels](https://github.com/django/channels), for WebSocket
 - [redis](https://redis.io/), as a backing store
 - [postgresql](https://www.postgresql.org/), as a database
 
