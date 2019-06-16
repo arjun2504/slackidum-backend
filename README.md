@@ -1,6 +1,6 @@
 # slackidum-backend
 
-This is a bakcend built with Django for [Slackidum](https://github.com/arjun2504/slackidum) web application.
+This is a bakcend built with Django for [Slackidum](https://github.com/arjun2504/slackidum) web application. Following technologies have been used.
 
 - [django](https://www.djangoproject.com/) web framework
 - [djangorestframework](https://www.django-rest-framework.org/) - to build API endpoints
